@@ -2,9 +2,9 @@ import Color from './color'
 
 export default { process }
 
-function process(colors, ...images) {
-  if (!Array.isArray(colors))
-    colors = [colors]
+function process(images, ...colors) {
+  if (!Array.isArray(images))
+    images = [images]
   let processed = []
   for (let image of images) {
     for (let color of colors)
@@ -28,8 +28,6 @@ function processOne(key, image) {
   let context = canvas.getContext('2d')
   context.drawImage(image, 0, 0)
 
-  console.log(canvas.toDataURL())
-
   let imageData = context.getImageData(0, 0, width, height)
   let data = imageData.data
 
@@ -46,8 +44,6 @@ function processOne(key, image) {
   }
 
   context.putImageData(imageData, 0, 0)
-
-  console.log(canvas.toDataURL())
 
   return canvas
 

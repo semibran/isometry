@@ -69,12 +69,12 @@ var slicedToArray = function () {
 
 var Alpha = { process: process };
 
-function process(colors) {
-  if (!Array.isArray(colors)) colors = [colors];
+function process(images) {
+  if (!Array.isArray(images)) images = [images];
   var processed = [];
 
-  for (var _len = arguments.length, images = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    images[_key - 1] = arguments[_key];
+  for (var _len = arguments.length, colors = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    colors[_key - 1] = arguments[_key];
   }
 
   var _iteratorNormalCompletion = true;
@@ -147,8 +147,6 @@ function processOne(key, image) {
   var context = canvas.getContext('2d');
   context.drawImage(image, 0, 0);
 
-  console.log(canvas.toDataURL());
-
   var imageData = context.getImageData(0, 0, width, height);
   var data = imageData.data;
 
@@ -172,8 +170,6 @@ function processOne(key, image) {
   }
 
   context.putImageData(imageData, 0, 0);
-
-  console.log(canvas.toDataURL());
 
   return canvas;
 }
@@ -243,24 +239,34 @@ function create(size) {
   function render() {}
 }
 
+var WORLD_SIZE = 9;
+
 var display = Display.create([320, 240]);
+var world = new Uint8ClampedArray(WORLD_SIZE * WORLD_SIZE);
 
 Image$1.load(['floor.png', 'wall.png'], setup);
 
 function setup(sprites) {
   display.mount('#app');
 
-  var floor = Alpha.process('magenta', sprites.floor);
+  var _sprites = sprites = Alpha.process(sprites, 'magenta'),
+      _sprites2 = slicedToArray(_sprites, 2),
+      floor = _sprites2[0],
+      wall = _sprites2[1];
 
-  var width = 16;
-  var height = 8;
+  var tileWidth = floor.width / 2;
+  var tileHeight = tileWidth / 2;
 
-  var side = 8;
-  var area = side * side;
+  var size = WORLD_SIZE;
+  var area = size * size;
   for (var i = 0; i < area; i++) {
-    var x = i % side;
-    var y = (i - x) / side;
-    display.context.drawImage(floor, display.width / 2 + (x - y - 1) * width, display.height / 2 + (x + y) * height - side / 2 * width);
+    var x = i % size;
+    var y = (i - x) / size;
+    if (!x || !y || x === size - 1 || y === size - 1) world[i] = 1;
+    var id = world[i];
+    var sprite = sprites[id];
+    var elevation = (sprite.height - tileWidth) / tileHeight - 1;
+    display.context.drawImage(sprite, display.width / 2 + (x - y - 1) * tileWidth, display.height / 2 + (x + y - elevation) * tileHeight - size / 2 * tileWidth);
   }
   loop();
 }
