@@ -263,13 +263,13 @@ function setup(sprites) {
   for (var i = 0; i < area; i++) {
     var cx = i % size;
     var cy = (i - cx) / size;
-    if (!cx || !cy || cx === size - 1 || cy === size - 1) world[i] = 1;
+    if ((!cx || !cy || cx === size - 1 || cy === size - 1) && cx !== 4 && cy !== 4) world[i] = 1;
     var id = world[i];
     var sprite = sprites[id];
     var elevation = (sprite.height - tileWidth) / tileHeight - 1;
     var x = display.width / 2 + (cx - cy - 1) * tileWidth;
     var y = display.height / 2 + (cx + cy) * tileHeight - size / 2 * tileWidth;
-    display.context.drawImage(sprite, x, y - elevation * tileWidth);
+    display.context.drawImage(sprite, x, y - elevation * tileHeight);
     if (world[i] !== 0 || cx - 1 < 0 || world[cy * size + cx - 1] !== 1) continue;
     display.context.drawImage(shadow, x, y);
   }
