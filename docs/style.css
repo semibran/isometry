@@ -10,12 +10,22 @@ body {
 }
 
 #app {
-  width: 100vmin;
-  height: 100vmin;
+  width: 100vw;
+  position: relative;
   margin: auto;
+  background: black;
+}
+
+#app::before {
+  content: '';
+  display: block;
+  padding: 75% 0 0;
 }
 
 canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   image-rendering: optimizeSpeed;
@@ -25,4 +35,11 @@ canvas {
   image-rendering: crisp-edges;
   image-rendering: pixelated;
   -ms-interpolation-mode: nearest-neighbor;
+}
+
+@media (min-aspect-ratio: 4 / 3) {
+  #app {
+    width: calc(100vh * 4 / 3);
+    height: 100vh;
+  }
 }
