@@ -244,15 +244,16 @@ var WORLD_SIZE = 9;
 var display = Display.create([320, 240]);
 var world = new Uint8ClampedArray(WORLD_SIZE * WORLD_SIZE);
 
-Image$1.load(['floor.png', 'wall.png'], setup);
+Image$1.load(['floor.png', 'wall.png', 'shadow.png'], setup);
 
 function setup(sprites) {
   display.mount('#app');
 
   var _sprites = sprites = Alpha.process(sprites, 'magenta'),
-      _sprites2 = slicedToArray(_sprites, 2),
+      _sprites2 = slicedToArray(_sprites, 3),
       floor = _sprites2[0],
-      wall = _sprites2[1];
+      wall = _sprites2[1],
+      shadow = _sprites2[2];
 
   var tileWidth = floor.width / 2;
   var tileHeight = tileWidth / 2;
@@ -260,13 +261,17 @@ function setup(sprites) {
   var size = WORLD_SIZE;
   var area = size * size;
   for (var i = 0; i < area; i++) {
-    var x = i % size;
-    var y = (i - x) / size;
-    if (!x || !y || x === size - 1 || y === size - 1) world[i] = 1;
+    var cx = i % size;
+    var cy = (i - cx) / size;
+    if (!cx || !cy || cx === size - 1 || cy === size - 1) world[i] = 1;
     var id = world[i];
     var sprite = sprites[id];
     var elevation = (sprite.height - tileWidth) / tileHeight - 1;
-    display.context.drawImage(sprite, display.width / 2 + (x - y - 1) * tileWidth, display.height / 2 + (x + y - elevation) * tileHeight - size / 2 * tileWidth);
+    var x = display.width / 2 + (cx - cy - 1) * tileWidth;
+    var y = display.height / 2 + (cx + cy) * tileHeight - size / 2 * tileWidth;
+    display.context.drawImage(sprite, x, y - elevation * tileWidth);
+    if (world[i] !== 0 || cx - 1 < 0 || world[cy * size + cx - 1] !== 1) continue;
+    display.context.drawImage(shadow, x, y);
   }
   loop();
 }
